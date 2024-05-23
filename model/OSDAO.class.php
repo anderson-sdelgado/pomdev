@@ -28,7 +28,8 @@ class OSDAO extends Conn {
                         . " , ID_LIB_OS AS \"idLibOS\" "
                         . " , ID_PROPR_AGR AS \"idProprAgr\" "
                     . " FROM "
-                        . " USINAS.V_ECM_OS ";
+                        . " USINAS.V_ECM_OS "
+                    . " WHERE OS_ID <> 1664382 ";
 
         $this->Conn = parent::getConn();
         $this->Read = $this->Conn->prepare($select);
@@ -44,7 +45,7 @@ class OSDAO extends Conn {
         $select = " SELECT DISTINCT "
                         . " OS_ID AS \"idOS\" "
                         . " , NRO_OS AS \"nroOS\" "
-                        . " , NVL(AREA_PROGR, 10) AS \"areaProgrOS\" "
+                        . " , NVL(REPLACE(AREA_PROGR, ',', '.'), 10) AS \"areaProgrOS\" "
                         . " , SERV_AGR AS \"tipoOS\" "
                     . " FROM "
                         . " USINAS.V_PMM_OS "

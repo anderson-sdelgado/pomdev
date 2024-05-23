@@ -5,8 +5,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+require_once('../control/AtualAplicCTR.class.php');
+require_once('../model/AtualAplicDAO.class.php');
 require_once('../model/EquipDAO.class.php');
-require_once('../model/ItemCheckListDAO.class.php');
 require_once('../model/CabecCheckListDAO.class.php');
 require_once('../model/RespCheckListDAO.class.php');
 /**
@@ -18,32 +19,34 @@ class CheckListCTR {
 
     public function pesq($info) {
 
-        $nroEquip = $info['dado'];
-
         $equipDAO = new EquipDAO();
         $itemCheckListDAO = new ItemCheckListDAO();
+        $atualAplicDAO = new AtualAplicDAO();
 
-        $dadosEquip = array("dados" => $equipDAO->dados($nroEquip));
-        $resEquip = json_encode($dadosEquip);
+        $jsonObj = json_decode($info['dado']);
+        $dados = $jsonObj->dados;
 
-        $dadosItemCheckList = array("dados" => $itemCheckListDAO->dados());
-        $resItemCheckList = json_encode($dadosItemCheckList);
-
-        $itemCheckListDAO->atualCheckList($nroEquip);
-
-        return $resEquip . "_" . $resItemCheckList;
-
-    }
-    
-    public function dadosItem() {
-
-        $itemCheckListDAO = new ItemCheckListDAO();
-
-        $dados = array("dados"=>$itemCheckListDAO->dados());
-        $json_str = json_encode($dados);
-
-        return $json_str;
+        foreach ($dados as $d) {
+            $nroEquip = $d->nroEquip;
+            $token = $d->token;
+        }
         
+        $v = $atualAplicDAO->verToken($token);
+        
+        if ($v > 0) {
+
+            $dadosEquip = array("dados" => $equipDAO->dados($nroEquip));
+            $resEquip = json_encode($dadosEquip);
+
+            $dadosItemCheckList = array("dados" => $itemCheckListDAO->dados());
+            $resItemCheckList = json_encode($dadosItemCheckList);
+
+            $itemCheckListDAO->atualCheckList($nroEquip);
+
+            return $resEquip . "_" . $resItemCheckList;
+        
+        }
+
     }
     
     public function salvarDados($info) {
